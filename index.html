@@ -1,0 +1,172 @@
+<html>
+  <head>
+    <title>SORTING ALGORITHM IMPLEMENTATION</title>
+    <script src='js/lib/jquery-1.11.3.min.js'></script>
+    <script src='js/lib/bootstrap.min.js'></script>
+    <script src='js/sorting.js'></script>
+    <link href='css/lib/bootstrap.min.css' rel='stylesheet'>
+    <style>
+      .compare {
+        font-weight: bold;
+        color: orange;
+      }
+      .swap {
+        font-weight: bold;
+        color: green;
+      }
+
+  @import url('https://fonts.googleapis.com/css?family=Poppins:900&display=swap');
+
+#loader {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Poppins', sans-serif;
+  font-size: 36px;
+}
+
+.loading-a {
+  width: 90px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.loading-a-item:nth-child(1) {
+  animation: bouncing 0.4s alternate infinite cubic-bezier(0.6, 0.05, 0.15, 0.95);
+}
+.loading-a-item:nth-child(2) {
+  animation: bouncing 0.4s 0.1s alternate infinite cubic-bezier(0.6, 0.05, 0.15, 0.95) backwards;
+}
+.loading-a-item:nth-child(3) {
+  animation: bouncing 0.4s 0.2s alternate infinite cubic-bezier(0.6, 0.05, 0.15, 0.95) backwards;
+}
+
+@keyframes bouncing {
+  0% {
+    transform: translate3d(0, 10px, 0) scale(1.2, 0.85);
+  }
+  100% {
+    transform: translate3d(0, -20px, 0) scale(0.9, 1.1);
+  }
+}
+
+</style>	
+  </head>
+
+  <body id="body" class="dark-mode" bgcolor="#E6E6FA">
+ 
+   
+ <div class='container-fluid' id="container" style="display:none">
+<h1> Sorting Algorithm Visualization </h1>
+      <div class='row'>
+        <div class='col-xs-3'>
+          <div class='form-group'>
+            <label for='#array-size'>Array Size</label>
+            <input id='array-size' class='form-control' type='number' value="50"/>
+          </div>
+          <div class='form-group'>
+            <label for='#algo-select'>Algorithm</label>
+            <select class='form-control' id='algo-select'>
+              <option value='bubblesort'>Bubble sort</option>
+              <option value='selectionsort'>Selection sort</option>
+              <option value='insertionsort'>Insertion sort</option>
+              <option value='quicksort'>Quicksort</option>
+              	<option value='mergesort'>Merge sort</option>
+              
+            </select>
+          </div>
+      
+          <div class='form-group' id='pivot-select-div'>
+            <label for='#pivot-select'>Pivot choice</label>
+            <select class='form-control' id='pivot-select'>
+              <option value='random'>Random</option>
+              <option value='first'>First</option>
+              <option value='middle'>Middle</option>
+              <option value='last'>Last</option>
+              <option value='median3'>Median of 3</option>
+            </select>
+          </div>
+          <div class='form-group'>
+            <label for='#interval'>Interval (ms)</label>
+            <input id='interval' class='form-control' type='number' value="20"/>
+          </div>
+          
+          <div class='text-center'>
+            <button type="button" class="btn btn-success" id='start-btn'>Start</button>
+
+          </div>
+ 
+        </div>
+        <div class='col-xs-9' id='canvas-div'>
+          <canvas width=800"px" height="500px" id="main-canvas">
+        </div>
+      </div>
+    </div>
+   </p>
+<div class="loading-a" id="loader">
+    <div class="loading-a-item">@</div>
+    <div class="loading-a-item">_</div>
+    <div class="loading-a-item">@</div>
+  </div>
+</body>
+   
+    <script>
+	setTimeout(()=>{
+	loader =document.getElementById('loader')
+	loader.style.display = "none"
+	container = document.getElementById('container')
+	container.style.display = 'block'},
+1000);
+
+      $(function() {
+        var aa = null;
+
+        // Make the canvas fit the available space
+        
+        // Disable / enable the pivot select as needed
+        var update_pivot_select = function() {
+          var algo = $('#algo-select').val();
+          var pivot_algo = sorting.is_pivot_algo(algo);
+          $('#pivot-select').prop('disabled', !pivot_algo);
+          $('#pivot-select-div').toggleClass('hidden', !pivot_algo);
+        }
+        update_pivot_select();
+        $('#algo-select').change(update_pivot_select);
+
+        $('#start-btn').click(function() {
+          if (aa !== null) aa.cancel();
+
+          var n = parseInt($('#array-size').val());
+          var interval = parseInt($('#interval').val());
+          var algo = $('#algo-select').val();
+          var pivot_type = $('#pivot-select').val();
+          var sort_fn = sorting.get_sort_fn(algo, pivot_type);
+
+          
+
+          var ary = [];
+          for (var i = 0; i < n; i++) {
+            ary.push(Math.random()/2);
+          }
+          var init = $('#init-select').val();
+          if (init === 'sorted') {
+            ary.sort(function(a, b) { return a - b; });
+          } else if (init === 'reversed') {
+            ary.sort(function(a, b) {return b - a; });
+          }
+
+          var canvas = document.getElementById('main-canvas');
+          aa = new sorting.AnimatedArray(ary, canvas, interval);
+          sort_fn(aa);
+        });
+      });
+
+
+
+    </script>
+
+  </body>
+</html>
